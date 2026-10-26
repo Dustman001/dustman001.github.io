@@ -1,0 +1,345 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta property="og:title" content="Iván Padrón · Senior .NET Backend Engineer">
+<meta property="og:description" content="Senior backend engineer, 8+ years in C#, .NET, SQL Server and Azure. Specialized in APIs, integrations and event-driven systems.">
+<meta property="og:type" content="website">
+<title>Iván Padrón · Senior .NET Backend Engineer</title>
+<meta name="description" content="Senior .NET backend engineer specialized in system integration and event-driven architecture on Azure.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a single reading column; each case study pairs a written brief with a system diagram drawn as boxes and message flows. */
+:root{
+  --bg:#F5F7FB; --surface:#FFFFFF; --fg:#16203A; --muted:#5A6580; --line:#D5DCEA;
+  --accent:#2747C9; --accent-soft:#E6EBFB; --event:#B8690A; --event-soft:#FBF0E1;
+  --display:"Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+  --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+  --mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0E1322; --surface:#161D31; --fg:#E4E9F5; --muted:#98A3BE; --line:#2A3450;
+  --accent:#8FA6FF; --accent-soft:#1F2A4D; --event:#F0A84A; --event-soft:#33261A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0E1322; --surface:#161D31; --fg:#E4E9F5; --muted:#98A3BE; --line:#2A3450;
+  --accent:#8FA6FF; --accent-soft:#1F2A4D; --event:#F0A84A; --event-soft:#33261A; color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+body{background:var(--bg);color:var(--fg);font:400 16px/1.65 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:960px;margin:0 auto;padding-block:40px 64px;display:flex;flex-direction:column;gap:72px}
+h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(2.2rem,5.5vw,3.4rem);letter-spacing:-.02em}
+h2{font-size:clamp(1.5rem,3.2vw,2rem);letter-spacing:-.01em}
+h3{font-size:1.3rem}
+p{margin:0;max-width:65ch}
+a{color:var(--accent)}
+a:focus-visible,button:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:4px}
+.label{font:500 .74rem/1.2 var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.mono{font-family:var(--mono)}
+
+/* Header */
+header{display:flex;flex-direction:column;gap:20px}
+.top{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:baseline}
+.role{font:500 1.05rem/1.3 var(--body);color:var(--accent)}
+.lede{font-size:1.2rem;color:var(--fg)}
+.lede em{font-style:normal;background:var(--event-soft);color:var(--event);padding:0 .25em;border-radius:3px}
+.contact{display:flex;flex-wrap:wrap;gap:10px 22px;align-items:center;font-size:.95rem;color:var(--muted)}
+.contact .email{font-family:var(--mono);color:var(--fg);user-select:all}
+button.copy{font:500 .78rem var(--mono);background:var(--accent-soft);color:var(--accent);border:0;border-radius:4px;padding:4px 10px;cursor:pointer}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.facts div{background:var(--surface);padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.facts b{font:600 1.05rem var(--body)}
+
+/* Section heads */
+.sec{display:flex;flex-direction:column;gap:28px}
+.sec-head{display:flex;flex-direction:column;gap:8px;border-top:1px solid var(--line);padding-top:20px}
+
+/* Case studies */
+.case{display:flex;flex-direction:column;gap:18px;padding-bottom:36px;border-bottom:1px dashed var(--line)}
+.case:last-child{border-bottom:0;padding-bottom:0}
+.case-head{display:flex;flex-direction:column;gap:6px}
+.scale{font:400 .95rem var(--body);color:var(--muted);font-variant-numeric:tabular-nums}
+.scale b{font:700 1.15rem var(--display);color:var(--accent)}
+.case-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px}
+.case-grid > div{min-width:0;display:flex;flex-direction:column;gap:6px}
+.case-grid p{font-size:.95rem}
+.diagram{background:var(--surface);border:1px solid var(--line);border-radius:6px;overflow-x:auto;padding:12px}
+.diagram svg{display:block;min-width:640px;width:100%;height:auto}
+.tags{display:flex;flex-wrap:wrap;gap:6px}
+.tags span{font:400 .78rem var(--mono);color:var(--muted);border:1px solid var(--line);border-radius:3px;padding:2px 8px}
+@media (max-width:760px){.case-grid{grid-template-columns:1fr}}
+
+/* SVG parts */
+svg text{font-family:var(--body);fill:var(--fg)}
+svg .t{font-size:13px;font-weight:600}
+svg .s{font-size:11px;fill:var(--muted);font-family:var(--mono)}
+svg .box{fill:var(--surface);stroke:var(--line);stroke-width:1.5}
+svg .core{fill:var(--accent-soft);stroke:var(--accent);stroke-width:1.5}
+svg .bus{fill:var(--event-soft);stroke:var(--event);stroke-width:1.5}
+svg .flow{stroke:var(--muted);stroke-width:1.5;fill:none}
+svg .evt{stroke:var(--event);stroke-width:1.5;fill:none;stroke-dasharray:5 4}
+svg .head{fill:var(--muted)} svg .ehead{fill:var(--event)}
+svg .lbl{font-size:10.5px;fill:var(--event);font-family:var(--mono)}
+
+/* More work */
+.more{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.more article{background:var(--surface);border:1px solid var(--line);border-radius:6px;padding:18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.more p{font-size:.93rem;color:var(--muted)}
+@media (max-width:640px){.more{grid-template-columns:1fr}}
+
+/* Timeline */
+.timeline{display:flex;flex-direction:column;gap:0;border-left:2px solid var(--line);margin-left:6px}
+.timeline li{list-style:none;position:relative;padding:0 0 26px 24px;display:flex;flex-direction:column;gap:4px}
+.timeline li::before{content:"";position:absolute;left:-7px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:2px solid var(--accent)}
+.timeline ul{padding:0;margin:0}
+.when{font:500 .82rem var(--mono);color:var(--muted);font-variant-numeric:tabular-nums}
+
+/* Skills */
+.skills{display:grid;grid-template-columns:160px minmax(0,1fr);gap:10px 24px;margin:0}
+.skills dt{font:500 .8rem var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:3px}
+.skills dd{margin:0}
+@media (max-width:560px){.skills{grid-template-columns:1fr}.skills dd{margin-bottom:8px}}
+
+footer{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direction:column;gap:10px;color:var(--muted);font-size:.9rem}
+@media (prefers-reduced-motion:no-preference){.evt{animation:dash 1.6s linear infinite}@keyframes dash{to{stroke-dashoffset:-18}}}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="head" d="M0 0L10 5L0 10z"/></marker>
+    <marker id="e" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path class="ehead" d="M0 0L10 5L0 10z"/></marker>
+  </defs>
+</svg>
+
+<div class="wrap">
+
+<header>
+  <div class="top">
+    <span class="label">Portfolio · 2026</span>
+    <span class="label">Santiago, Dominican Republic · Remote</span>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <h1>Iván Padrón</h1>
+    <span class="role">Senior .NET Backend Engineer</span>
+  </div>
+  <p class="lede">I connect systems that were never designed to talk to each other. For 8+ years I've built APIs, data models and <em>event-driven</em> integrations on .NET and Azure, from the SQL schema all the way to production.</p>
+  <div class="contact">
+    <span class="email" id="email">dustman01@gmail.com</span>
+    <button class="copy" id="copy-email" type="button">Copy email</button>
+    <a href="https://www.linkedin.com/in/ivan-amado-padron-perez-39474574" target="_blank" rel="noopener">LinkedIn</a>
+    <span>English: advanced · Spanish: native</span>
+  </div>
+  <div class="facts">
+    <div><span class="label">Experience</span><b>8+ years in .NET</b></div>
+    <div><span class="label">Focus</span><b>Integration & events</b></div>
+    <div><span class="label">Cloud</span><b>Azure, AKS, Terraform</b></div>
+    <div><span class="label">Scale</span><b>~500 US communities</b></div>
+  </div>
+</header>
+
+<section class="sec" id="case-studies">
+  <div class="sec-head">
+    <span class="label">Selected work</span>
+    <h2>Case studies</h2>
+    <p style="color:var(--muted)">Client work for a nearshore consultancy serving property-management and building-automation companies. Client names and data are left out; architecture and decisions are my own.</p>
+  </div>
+
+  <!-- 1 UDM -->
+  <article class="case" id="udm">
+    <div class="case-head">
+      <span class="label">Data architecture · API</span>
+      <h3>Universal Data Model: one schema for three platforms</h3>
+      <p class="scale"><b>30+</b> management companies <span aria-hidden="true">·</span> <b>~500</b> communities across the US</p>
+    </div>
+    <div class="case-grid">
+      <div><span class="label">Problem</span><p>Property management, a community platform and suite management each kept their own copy of communities, people and units. The same resident could exist three times with different data.</p></div>
+      <div><span class="label">What I built</span><p>The central canonical model in SQL Server, fed by change-data-capture events, plus typed Azure Functions endpoints for communities, people, units, work orders, violations and notifications.</p></div>
+      <div><span class="label">Key decisions</span><p>Unified people across systems by normalized email scoped to each management company. Put every endpoint behind one shared API-key validation service. Built a React 18 consumer app.</p></div>
+    </div>
+    <div class="diagram" role="img" aria-label="Three source systems publish change events into the canonical SQL Server model, which typed Azure Functions expose to a React app through API key validation.">
+      <svg viewBox="0 0 760 230">
+        <rect class="box" x="10" y="20" width="170" height="50" rx="5"/><text class="t" x="24" y="42">Property management</text><text class="s" x="24" y="59">source system</text>
+        <rect class="box" x="10" y="90" width="170" height="50" rx="5"/><text class="t" x="24" y="112">Community platform</text><text class="s" x="24" y="129">source system</text>
+        <rect class="box" x="10" y="160" width="170" height="50" rx="5"/><text class="t" x="24" y="182">Suite management</text><text class="s" x="24" y="199">source system</text>
+        <path class="evt" d="M180 45 C230 45 230 105 280 110" marker-end="url(#e)"/>
+        <path class="evt" d="M180 115 L280 115" marker-end="url(#e)"/>
+        <path class="evt" d="M180 185 C230 185 230 125 280 120" marker-end="url(#e)"/>
+        <text class="lbl" x="200" y="100">CDC events</text>
+        <rect class="core" x="282" y="70" width="180" height="90" rx="5"/><text class="t" x="298" y="100">Universal Data Model</text><text class="s" x="298" y="120">canonical schema</text><text class="s" x="298" y="138">SQL Server</text>
+        <path class="flow" d="M462 115 L520 115" marker-end="url(#a)"/>
+        <rect class="box" x="522" y="70" width="110" height="90" rx="5"/><text class="t" x="534" y="98">Typed API</text><text class="s" x="534" y="118">Azure</text><text class="s" x="534" y="134">Functions</text>
+        <rect class="box" x="522" y="180" width="110" height="38" rx="5"/><text class="s" x="534" y="203">API-key service</text>
+        <path class="flow" d="M577 180 L577 162" marker-end="url(#a)"/>
+        <path class="flow" d="M632 115 L670 115" marker-end="url(#a)"/>
+        <rect class="box" x="672" y="85" width="80" height="60" rx="5"/><text class="t" x="684" y="110">React</text><text class="s" x="684" y="128">consumer</text>
+      </svg>
+    </div>
+    <div class="tags"><span>SQL Server</span><span>Azure Functions</span><span>C# .NET 8</span><span>CDC</span><span>React 18</span><span>TypeScript</span><span>Vite</span><span>TailwindCSS</span></div>
+  </article>
+
+  <!-- 2 CDC -->
+  <article class="case" id="cdc">
+    <div class="case-head">
+      <span class="label">Event streaming</span>
+      <h3>Change Data Capture event system</h3>
+    </div>
+    <div class="case-grid">
+      <div><span class="label">Problem</span><p>Downstream services needed to react when data changed in each client's database, without touching the legacy applications that wrote to it.</p></div>
+      <div><span class="label">What I built</span><p>A timer-triggered Azure Functions listener (dotnet-isolated) that reads SQL Server CDC tables in every client database and publishes "entity changed" events to Azure Event Hub.</p></div>
+      <div><span class="label">Key decisions</span><p>Tracked the log sequence number (LSN) per database so no change is processed twice. Made batch size configurable. Added health and liveness probes so Kubernetes can restart a stuck listener.</p></div>
+    </div>
+    <div class="diagram" role="img" aria-label="Client databases with CDC tables are polled by a timer-triggered listener that checkpoints the LSN and publishes events to Event Hub for downstream consumers.">
+      <svg viewBox="0 0 760 200">
+        <rect class="box" x="10" y="30" width="150" height="44" rx="5"/><text class="t" x="24" y="57">Client DB A</text>
+        <rect class="box" x="10" y="84" width="150" height="44" rx="5"/><text class="t" x="24" y="111">Client DB B</text>
+        <rect class="box" x="10" y="138" width="150" height="44" rx="5"/><text class="t" x="24" y="165">Client DB n</text>
+        <text class="s" x="10" y="20">SQL Server CDC tables</text>
+        <path class="flow" d="M160 52 C200 52 200 95 240 100" marker-end="url(#a)"/>
+        <path class="flow" d="M160 106 L240 106" marker-end="url(#a)"/>
+        <path class="flow" d="M160 160 C200 160 200 117 240 112" marker-end="url(#a)"/>
+        <text class="s" x="176" y="140">poll</text>
+        <rect class="core" x="242" y="56" width="200" height="100" rx="5"/><text class="t" x="258" y="84">CDC listener</text><text class="s" x="258" y="104">timer trigger · isolated</text><text class="s" x="258" y="122">LSN checkpoint</text><text class="s" x="258" y="140">batched reads · probes</text>
+        <path class="evt" d="M442 106 L500 106" marker-end="url(#e)"/>
+        <text class="lbl" x="446" y="96">entity changed</text>
+        <rect class="bus" x="502" y="76" width="110" height="60" rx="5"/><text class="t" x="516" y="102">Event Hub</text><text class="s" x="516" y="120">Azure</text>
+        <path class="evt" d="M612 96 L660 70" marker-end="url(#e)"/>
+        <path class="evt" d="M612 116 L660 142" marker-end="url(#e)"/>
+        <rect class="box" x="662" y="45" width="90" height="44" rx="5"/><text class="s" x="674" y="71">data model</text>
+        <rect class="box" x="662" y="122" width="90" height="44" rx="5"/><text class="s" x="674" y="148">notifications</text>
+      </svg>
+    </div>
+    <div class="tags"><span>Azure Functions</span><span>Azure Event Hub</span><span>SQL Server CDC</span><span>AKS</span><span>Docker</span><span>Helm</span></div>
+  </article>
+
+  <!-- 3 Notifications -->
+  <article class="case" id="notifications">
+    <div class="case-head">
+      <span class="label">Messaging · Resilience</span>
+      <h3>Multi-channel notification service</h3>
+    </div>
+    <div class="case-grid">
+      <div><span class="label">Problem</span><p>Every change in the database could matter to different residents and staff. The right people had to hear about it by email, SMS or push, even when a provider was down.</p></div>
+      <div><span class="label">What I built</span><p>A service that resolves recipients by community, role and subscription rules, queues each message on Azure Service Bus, and delivers through SendGrid, Twilio and push, with tracking in Cosmos DB.</p></div>
+      <div><span class="label">Key decisions</span><p>Polly v8 policies for provider failures, Service Bus for retries, and a sandbox mode to test without spending credits. Found and fixed a production bug that silently dropped messages for non-admin users by adding logging at every pipeline stage.</p></div>
+    </div>
+    <div class="diagram" role="img" aria-label="A change event goes to a recipient resolver, then a Service Bus queue, then channel senders for email, SMS and push, with delivery tracking in Cosmos DB.">
+      <svg viewBox="0 0 760 210">
+        <rect class="bus" x="10" y="80" width="120" height="50" rx="5"/><text class="t" x="24" y="102">Change event</text><text class="s" x="24" y="119">from CDC</text>
+        <path class="evt" d="M130 105 L170 105" marker-end="url(#e)"/>
+        <rect class="core" x="172" y="65" width="170" height="80" rx="5"/><text class="t" x="188" y="92">Recipient resolver</text><text class="s" x="188" y="112">community · role</text><text class="s" x="188" y="128">subscription rules</text>
+        <path class="flow" d="M342 105 L382 105" marker-end="url(#a)"/>
+        <rect class="bus" x="384" y="75" width="130" height="60" rx="5"/><text class="t" x="398" y="100">Service Bus</text><text class="s" x="398" y="118">queue · retries</text>
+        <path class="flow" d="M514 95 L572 42" marker-end="url(#a)"/>
+        <path class="flow" d="M514 105 L572 105" marker-end="url(#a)"/>
+        <path class="flow" d="M514 115 L572 168" marker-end="url(#a)"/>
+        <rect class="box" x="574" y="18" width="178" height="46" rx="5"/><text class="t" x="588" y="38">Email</text><text class="s" x="588" y="54">SendGrid · Polly</text>
+        <rect class="box" x="574" y="82" width="178" height="46" rx="5"/><text class="t" x="588" y="102">SMS</text><text class="s" x="588" y="118">Twilio · Polly</text>
+        <rect class="box" x="574" y="146" width="178" height="46" rx="5"/><text class="t" x="588" y="166">Push</text><text class="s" x="588" y="182">mobile devices</text>
+        <rect class="box" x="384" y="160" width="130" height="40" rx="5"/><text class="s" x="396" y="184">Cosmos DB tracking</text>
+        <path class="flow" d="M449 135 L449 158" marker-end="url(#a)"/>
+      </svg>
+    </div>
+    <div class="tags"><span>Azure Service Bus</span><span>Cosmos DB</span><span>Polly v8</span><span>SendGrid</span><span>Twilio</span><span>Serilog</span></div>
+  </article>
+
+  <!-- 4 IAIA -->
+  <article class="case" id="instant-access">
+    <div class="case-head">
+      <span class="label">End-to-end feature</span>
+      <h3>In-App Instant Access</h3>
+    </div>
+    <div class="case-grid">
+      <div><span class="label">Problem</span><p>Residents and visitors needed to request building access from the app, and managers needed to approve it without staff manually granting each one.</p></div>
+      <div><span class="label">What I built</span><p>The complete feature: SQL schema, REST endpoints for the approval flow, an Azure Service Bus queue, a background scheduler that grants access automatically, and the React/TypeScript interface.</p></div>
+      <div><span class="label">Key decisions</span><p>Decoupled approval from granting with a queue, so a slow access-control system never blocks the user. The scheduler handles timed access windows on its own.</p></div>
+    </div>
+    <div class="diagram" role="img" aria-label="A React interface calls REST approval endpoints backed by SQL Server; approved requests go to a Service Bus queue that a background scheduler uses to grant access.">
+      <svg viewBox="0 0 760 150">
+        <rect class="box" x="10" y="45" width="120" height="60" rx="5"/><text class="t" x="24" y="70">Request UI</text><text class="s" x="24" y="88">React · TS</text>
+        <path class="flow" d="M130 75 L170 75" marker-end="url(#a)"/>
+        <rect class="core" x="172" y="45" width="150" height="60" rx="5"/><text class="t" x="186" y="70">Approval API</text><text class="s" x="186" y="88">ASP.NET Core REST</text>
+        <path class="flow" d="M247 105 L247 122" marker-end="url(#a)"/>
+        <rect class="box" x="187" y="124" width="120" height="22" rx="4"/><text class="s" x="214" y="139">SQL Server</text>
+        <path class="evt" d="M322 75 L372 75" marker-end="url(#e)"/>
+        <text class="lbl" x="326" y="66">approved</text>
+        <rect class="bus" x="374" y="45" width="130" height="60" rx="5"/><text class="t" x="388" y="70">Service Bus</text><text class="s" x="388" y="88">access queue</text>
+        <path class="flow" d="M504 75 L544 75" marker-end="url(#a)"/>
+        <rect class="box" x="546" y="45" width="110" height="60" rx="5"/><text class="t" x="558" y="70">Scheduler</text><text class="s" x="558" y="88">background job</text>
+        <path class="flow" d="M656 75 L680 75" marker-end="url(#a)"/>
+        <rect class="box" x="682" y="45" width="70" height="60" rx="5"/><text class="t" x="692" y="70">Gate</text><text class="s" x="692" y="88">access</text>
+      </svg>
+    </div>
+    <div class="tags"><span>ASP.NET Core</span><span>SQL Server</span><span>Azure Service Bus</span><span>React</span><span>TypeScript</span></div>
+  </article>
+</section>
+
+<section class="sec" id="more">
+  <div class="sec-head">
+    <span class="label">Also shipped</span>
+    <h2>More projects</h2>
+  </div>
+  <div class="more">
+    <article><span class="label">Integration</span><h3>Cross-platform sync</h3><p>Azure Data Factory and Functions pipelines between accounting and property-management systems, including bidirectional sync and per-environment migrations. Added Serilog and Grafana observability to every sync function and built three production reports.</p></article>
+    <article><span class="label">Messaging</span><h3>SMS delivery service</h3><p>Service Bus-triggered Azure Function integrated with Twilio, with retries and delivery tracking, plus an in-product usage dashboard with acceptance and rejection rates per provider and per community.</p></article>
+    <article><span class="label">Full stack</span><h3>Community web platform</h3><p>Owned the community web app end to end through general availability: ASP.NET MVC and Web API controllers, T-SQL stored procedures, React components and Playwright end-to-end tests.</p></article>
+    <article><span class="label">Devices</span><h3>Access control & plate recognition</h3><p>Gate kiosks, an access API, barcode scanning, license-plate recognition and resident check-in across a desktop app, a Windows service and sync jobs, sharing one NuGet business-logic package.</p></article>
+    <article><span class="label">Modernization</span><h3>Payroll integration</h3><p>Moved a payroll system from batch processing to event-driven sync with a new external platform over REST APIs. Also built a TCPA-compliance checker against the FCC reassigned-numbers database.</p></article>
+    <article><span class="label">BI · Web</span><h3>Utility service-quality KPIs</h3><p>Replaced manual Excel processes at an electricity distributor serving over a million customers with ASP.NET web apps and a BI solution, cutting human errors by 80% and updating the annual operating plan daily.</p></article>
+  </div>
+</section>
+
+<section class="sec" id="experience">
+  <div class="sec-head">
+    <span class="label">Career</span>
+    <h2>Experience</h2>
+  </div>
+  <ul class="timeline">
+    <li><span class="when">2022 – 2026</span><h3>Senior Software Developer · CH2 Solutions</h3><p>Nearshore consultancy. Full feature ownership across .NET 8/10, Azure Functions, React and Angular. Azure DevOps pipelines building Docker images and deploying to AKS with Helm; Terraform modules for Function Apps, Key Vault and Application Insights.</p></li>
+    <li><span class="when">2021 – 2022</span><h3>Software Developer III · Enhanced Resource Center</h3><p>BPO company. Agent coaching web app, TCPA compliance tooling and payroll modernization.</p></li>
+    <li><span class="when">2009 – 2021</span><h3>Data Acquisition System Administrator · Edenorte Dominicana</h3><p>Electricity distributor. Web and BI solutions for commercial service-quality indicators.</p></li>
+  </ul>
+</section>
+
+<section class="sec" id="skills">
+  <div class="sec-head">
+    <span class="label">Toolbox</span>
+    <h2>Skills</h2>
+  </div>
+  <dl class="skills">
+    <dt>Backend</dt><dd>C#, .NET 8/10, ASP.NET Core Web API, EF Core, Dapper, Polly, REST, SOAP, webhooks, Blazor</dd>
+    <dt>Azure & DevOps</dt><dd>Functions, Service Bus, Event Hub, Data Factory, AKS, Key Vault, Application Insights, Azure DevOps, Docker, Kubernetes, Helm, Terraform</dd>
+    <dt>Data</dt><dd>SQL Server, T-SQL, Change Data Capture, Cosmos DB, PostgreSQL, MySQL, Redis</dd>
+    <dt>Frontend</dt><dd>React 18/19, TypeScript, Angular, Vite, TailwindCSS</dd>
+    <dt>Architecture</dt><dd>Event-driven, microservices, serverless, CQRS, DDD, TDD, BDD</dd>
+    <dt>Testing & ops</dt><dd>xUnit, NUnit, Playwright, Selenium, Serilog, Grafana</dd>
+    <dt>Security</dt><dd>OAuth, OpenID Connect, JWT, API-key authentication</dd>
+    <dt>AI tooling</dt><dd>Claude Code, RAG, MCP</dd>
+  </dl>
+</section>
+
+<footer>
+  <span>B.S. Telematics Engineering, PUCMM · SQL Server Database Administration, UNAPEC</span>
+  <span>Open to remote senior backend roles. Reach me at <span class="mono" style="color:var(--fg);user-select:all">dustman01@gmail.com</span>.</span>
+</footer>
+
+</div>
+
+<script>
+document.getElementById('copy-email').addEventListener('click', function(){
+  var btn=this, text=document.getElementById('email').textContent;
+  function done(){btn.textContent='Copied';setTimeout(function(){btn.textContent='Copy email'},1600)}
+  function fallback(){var r=document.createRange();r.selectNodeContents(document.getElementById('email'));var s=getSelection();s.removeAllRanges();s.addRange(r);btn.textContent='Selected, press Ctrl+C'}
+  try{navigator.clipboard.writeText(text).then(done,fallback)}catch(e){fallback()}
+});
+</script>
+</body>
+</html>
