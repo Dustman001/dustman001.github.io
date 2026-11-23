@@ -143,6 +143,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direc
     <div><span class="label">Focus</span><b>Integration & events</b></div>
     <div><span class="label">Cloud</span><b>Azure, AKS, Terraform</b></div>
     <div><span class="label">Scale</span><b>~500 US communities</b></div>
+    <div><span class="label">Delivery</span><b>1,600+ commits · 30+ repos</b></div>
   </div>
 </header>
 
@@ -195,7 +196,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direc
     <div class="case-grid">
       <div><span class="label">Problem</span><p>Downstream services needed to react when data changed in each client's database, without touching the legacy applications that wrote to it.</p></div>
       <div><span class="label">What I built</span><p>A timer-triggered Azure Functions listener (dotnet-isolated) that reads SQL Server CDC tables in every client database and publishes "entity changed" events to Azure Event Hub.</p></div>
-      <div><span class="label">Key decisions</span><p>Tracked the log sequence number (LSN) per database so no change is processed twice. Made batch size configurable. Added health and liveness probes so Kubernetes can restart a stuck listener.</p></div>
+      <div><span class="label">Key decisions</span><p>Tracked the log sequence number (LSN) per database so no change is processed twice. Made batch size configurable. Added health and liveness probes so Kubernetes can restart a stuck listener. On the consumer side: retries, dead-lettering, idempotent processing, a guard against re-consuming its own writes, and a per-tenant re-sync pass.</p></div>
     </div>
     <div class="diagram" role="img" aria-label="Client databases with CDC tables are polled by a timer-triggered listener that checkpoints the LSN and publishes events to Event Hub for downstream consumers.">
       <svg viewBox="0 0 760 200">
@@ -280,6 +281,184 @@ footer{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direc
     </div>
     <div class="tags"><span>ASP.NET Core</span><span>SQL Server</span><span>Azure Service Bus</span><span>React</span><span>TypeScript</span></div>
   </article>
+  <!-- 5 In-app notifications -->
+  <article class="case" id="in-app">
+    <div class="case-head">
+      <span class="label">Messaging · Cross-product</span>
+      <h3>In-app notifications across three products</h3>
+    </div>
+    <div class="case-grid">
+      <div><span class="label">Problem</span><p>Violations, work orders, delinquencies and architectural requests had to reach staff and residents inside three different products, and each alert had to open the exact record it was about.</p></div>
+      <div><span class="label">What I built</span><p>A new in-app channel in the shared messaging hub with OAuth client-credentials service tokens, and a notification service that sends through the hub first and falls back to a direct database write. It builds role-aware deep links and branded HTML emails.</p></div>
+      <div><span class="label">Key decisions</span><p>Replaced four drifted copies of the deep-link host logic with one config-driven rule, validated per environment at startup. A link the template built wrong is dropped instead of mailed as a dead URL.</p></div>
+    </div>
+    <div class="diagram" role="img" aria-label="A change event reaches the notification service, which sends in-app messages through the messaging hub to a desktop app, a web app and a community portal, falling back to a direct database write.">
+      <svg viewBox="0 0 760 210">
+        <rect class="bus" x="10" y="80" width="120" height="50" rx="5"/><text class="t" x="24" y="102">Change event</text><text class="s" x="24" y="119">from CDC</text>
+        <path class="evt" d="M130 105 L170 105" marker-end="url(#e)"/>
+        <rect class="core" x="172" y="65" width="170" height="80" rx="5"/><text class="t" x="188" y="92">Notification service</text><text class="s" x="188" y="112">role-aware links</text><text class="s" x="188" y="128">HTML email</text>
+        <path class="flow" d="M342 105 L382 105" marker-end="url(#a)"/>
+        <rect class="bus" x="384" y="75" width="130" height="60" rx="5"/><text class="t" x="398" y="100">Messaging hub</text><text class="s" x="398" y="118">in-app · token</text>
+        <path class="flow" d="M514 95 L572 42" marker-end="url(#a)"/>
+        <path class="flow" d="M514 105 L572 105" marker-end="url(#a)"/>
+        <path class="flow" d="M514 115 L572 168" marker-end="url(#a)"/>
+        <rect class="box" x="574" y="18" width="178" height="46" rx="5"/><text class="t" x="588" y="38">Desktop app</text><text class="s" x="588" y="54">opens the record</text>
+        <rect class="box" x="574" y="82" width="178" height="46" rx="5"/><text class="t" x="588" y="102">Web app</text><text class="s" x="588" y="118">notification bell</text>
+        <rect class="box" x="574" y="146" width="178" height="46" rx="5"/><text class="t" x="588" y="166">Community portal</text><text class="s" x="588" y="182">residents</text>
+        <rect class="box" x="172" y="160" width="170" height="40" rx="5"/><text class="s" x="184" y="184">fallback: direct DB write</text>
+        <path class="flow" d="M257 145 L257 158" marker-end="url(#a)"/>
+      </svg>
+    </div>
+    <div class="tags"><span>.NET</span><span>OAuth client credentials</span><span>SQL Server</span><span>Serilog</span><span>Grafana</span></div>
+  </article>
+</section>
+
+<section class="sec" id="platform">
+  <div class="sec-head">
+    <span class="label">Legacy platform · .NET Framework to Azure</span>
+    <h2>Community platform: how the pieces connect</h2>
+    <p style="color:var(--muted)">From 2022 to 2025 I worked across almost every part of one community-management platform: the web app, its REST API, the gatehouse desktop apps, background services, device sync and integrations. These four views show how they fit together.</p>
+  </div>
+
+  <!-- A Architecture -->
+  <article class="case" id="architecture">
+    <div class="case-head">
+      <span class="label">Architecture</span>
+      <h3>One business library behind every client</h3>
+      <p class="scale"><b>23</b> repositories <span aria-hidden="true">·</span> web, mobile, desktop, services and devices</p>
+    </div>
+    <div class="case-grid">
+      <div><span class="label">Problem</span><p>A .NET Framework web app, a REST API, gatehouse kiosks and a dozen background services each carried their own copy of the business rules, so a fix in one place broke or missed the others.</p></div>
+      <div><span class="label">What I built</span><p>Moved business logic out of WebForms code-behind into interface-based, unit-tested operations classes in one shared library, published as a NuGet package and consumed by the web app, REST API, gate service and background services.</p></div>
+      <div><span class="label">Key decisions</span><p>Kept SQL Server stored procedures as the data contract and put all data access behind one DAO interface, so the operations classes could be tested with mocks. Replaced local copies of the library with the package in every consumer. Later led the cloud configuration for about eight services and upgraded services to .NET 6 and .NET 8 with Docker.</p></div>
+    </div>
+    <div class="diagram" role="img" aria-label="A web app, a mobile app through a REST API, and gatehouse apps through a gate service all use one shared business library that talks to SQL Server. Background services, device sync and accounting sync also use the library and database, and PubNub pushes real-time changes to gatehouses.">
+      <svg viewBox="0 0 760 340">
+        <rect class="box" x="10" y="20" width="150" height="56" rx="5"/><text class="t" x="24" y="44">Web app</text><text class="s" x="24" y="62">WebForms · MVC 5</text>
+        <rect class="box" x="10" y="96" width="150" height="56" rx="5"/><text class="t" x="24" y="120">Mobile app</text><text class="s" x="24" y="138">residents</text>
+        <rect class="box" x="10" y="172" width="150" height="56" rx="5"/><text class="t" x="24" y="196">Gatehouse app</text><text class="s" x="24" y="214">WinForms · local DB</text>
+        <rect class="box" x="200" y="96" width="150" height="56" rx="5"/><text class="t" x="214" y="120">REST API</text><text class="s" x="214" y="138">ASP.NET Web API</text>
+        <rect class="box" x="200" y="172" width="150" height="56" rx="5"/><text class="t" x="214" y="196">Gate service</text><text class="s" x="214" y="214">sync endpoints</text>
+        <path class="flow" d="M160 124 L198 124" marker-end="url(#a)"/>
+        <path class="flow" d="M160 200 L198 200" marker-end="url(#a)"/>
+        <path class="flow" d="M160 48 C280 48 330 70 388 90" marker-end="url(#a)"/>
+        <path class="flow" d="M160 40 C200 40 240 60 270 94" marker-end="url(#a)"/>
+        <text class="s" x="214" y="40">reports</text>
+        <rect class="core" x="390" y="60" width="180" height="170" rx="5"/><text class="t" x="406" y="90">Shared business</text><text class="t" x="406" y="108">library</text><text class="s" x="406" y="132">NuGet package</text><text class="s" x="406" y="150">operations classes</text><text class="s" x="406" y="168">DAO interface</text><text class="s" x="406" y="186">unit tested</text>
+        <path class="flow" d="M350 124 L388 124" marker-end="url(#a)"/>
+        <path class="flow" d="M350 200 L388 200" marker-end="url(#a)"/>
+        <rect class="box" x="610" y="100" width="140" height="90" rx="5"/><text class="t" x="624" y="128">SQL Server</text><text class="s" x="624" y="148">stored</text><text class="s" x="624" y="164">procedures</text>
+        <path class="flow" d="M570 145 L608 145" marker-end="url(#a)"/>
+        <rect class="bus" x="10" y="266" width="150" height="56" rx="5"/><text class="t" x="24" y="290">PubNub</text><text class="s" x="24" y="308">real-time push</text>
+        <path class="evt" d="M200 222 C180 250 170 270 162 284" marker-end="url(#e)"/>
+        <path class="evt" d="M85 266 L85 230" marker-end="url(#e)"/>
+        <text class="lbl" x="94" y="252">changes</text>
+        <rect class="box" x="200" y="266" width="172" height="56" rx="5"/><text class="t" x="214" y="290">Background services</text><text class="s" x="214" y="308">scheduler · SMS · mail</text>
+        <rect class="box" x="390" y="266" width="180" height="56" rx="5"/><text class="t" x="404" y="290">Device sync</text><text class="s" x="404" y="308">controllers · LPR · TES</text>
+        <rect class="box" x="600" y="266" width="150" height="56" rx="5"/><text class="t" x="614" y="290">Accounting sync</text><text class="s" x="614" y="308">Service Bus · ADF</text>
+        <path class="flow" d="M300 266 C320 250 360 240 400 232" marker-end="url(#a)"/>
+        <path class="flow" d="M480 266 L480 232" marker-end="url(#a)"/>
+        <path class="flow" d="M680 266 L680 192" marker-end="url(#a)"/>
+      </svg>
+    </div>
+    <div class="tags"><span>.NET Framework 4.8</span><span>ASP.NET WebForms</span><span>MVC 5</span><span>Web API</span><span>NuGet</span><span>SQL Server</span><span>Dapper</span><span>PubNub</span><span>NUnit</span><span>xUnit</span></div>
+  </article>
+
+  <!-- B Gatehouse sync -->
+  <article class="case" id="gatehouse">
+    <div class="case-head">
+      <span class="label">Offline-first · Real-time</span>
+      <h3>Gatehouse kiosks that keep working offline</h3>
+    </div>
+    <div class="case-grid">
+      <div><span class="label">Problem</span><p>Gate attendants have to log guests and print passes even when the network drops, while residents and the web app change the same guests and passes at the same time.</p></div>
+      <div><span class="label">What I built</span><p>Two-way sync between each kiosk's local database and the gate service, real-time guest and pass updates over PubNub, a daily update check with an in-app prompt, and email alerts to community admins about gatehouses running old versions.</p></div>
+      <div><span class="label">Key decisions</span><p>Kept pass data on the kiosk until a sync fully completes, so nothing is lost mid-sync. Stored sync times in UTC and converted to each community's time zone. Replaced a server probe with a heartbeat timer, and hardened the kiosk key check.</p></div>
+    </div>
+    <div class="diagram" role="img" aria-label="The gatehouse app syncs both ways with the gate service, which reads and writes SQL Server and publishes changes to PubNub, which pushes them back to the kiosks. A scheduler emails admins about gatehouses on old versions.">
+      <svg viewBox="0 0 760 210">
+        <rect class="core" x="10" y="60" width="190" height="90" rx="5"/><text class="t" x="26" y="88">Gatehouse app</text><text class="s" x="26" y="108">WinForms kiosk</text><text class="s" x="26" y="126">local DB · EF Core</text>
+        <rect class="box" x="290" y="20" width="160" height="56" rx="5"/><text class="t" x="304" y="44">Gate service</text><text class="s" x="304" y="62">HTTPS sync API</text>
+        <path class="flow" d="M200 86 L288 52" marker-end="url(#a)" marker-start="url(#a)"/>
+        <text class="s" x="214" y="56">sync loop</text>
+        <rect class="bus" x="290" y="130" width="160" height="56" rx="5"/><text class="t" x="304" y="154">PubNub</text><text class="s" x="304" y="172">guests · passes</text>
+        <path class="evt" d="M370 76 L370 128" marker-end="url(#e)"/>
+        <path class="evt" d="M290 158 L202 132" marker-end="url(#e)"/>
+        <text class="lbl" x="216" y="164">push</text>
+        <rect class="box" x="530" y="20" width="110" height="56" rx="5"/><text class="t" x="544" y="44">SQL Server</text><text class="s" x="544" y="62">shared</text>
+        <path class="flow" d="M450 48 L528 48" marker-end="url(#a)"/>
+        <rect class="box" x="530" y="130" width="110" height="56" rx="5"/><text class="t" x="544" y="154">Scheduler</text><text class="s" x="544" y="172">version check</text>
+        <path class="flow" d="M585 76 L585 128" marker-end="url(#a)"/>
+        <rect class="box" x="670" y="130" width="80" height="56" rx="5"/><text class="t" x="682" y="154">Email</text><text class="s" x="682" y="172">admins</text>
+        <path class="flow" d="M640 158 L668 158" marker-end="url(#a)"/>
+      </svg>
+    </div>
+    <div class="tags"><span>WinForms</span><span>EF Core</span><span>PubNub</span><span>Windows services</span><span>Serilog</span></div>
+  </article>
+
+  <!-- C Async reporting -->
+  <article class="case" id="reporting">
+    <div class="case-head">
+      <span class="label">Background processing</span>
+      <h3>Asynchronous reporting platform</h3>
+      <p class="scale"><b>300,000+</b> rows per export <span aria-hidden="true">·</span> date ranges past 30 days</p>
+    </div>
+    <div class="case-grid">
+      <div><span class="label">Problem</span><p>Administration reports ran inside the web request. Long date ranges hit the page timeout, and users lost the report if they navigated away.</p></div>
+      <div><span class="label">What I built</span><p>A report controller in the REST API that generates reports in the background, a status table the web app polls for a progress pop-up, a My Reports page to download finished files, reminder emails for unread reports, and scheduled reports with recipients.</p></div>
+      <div><span class="label">Key decisions</span><p>Moved all report tracking into the database instead of the web session. Split large Excel exports across sheets. Reused the same API for scheduled reports, so on-demand and scheduled runs share one code path.</p></div>
+    </div>
+    <div class="diagram" role="img" aria-label="The reports page and the report scheduler call the report API, which generates files in the background and records status in SQL Server; the web app polls the status, users download from My Reports, and unread reports trigger a reminder email.">
+      <svg viewBox="0 0 760 220">
+        <rect class="box" x="10" y="60" width="140" height="56" rx="5"/><text class="t" x="24" y="84">Reports page</text><text class="s" x="24" y="102">web app</text>
+        <rect class="box" x="10" y="150" width="140" height="56" rx="5"/><text class="t" x="24" y="174">Scheduler</text><text class="s" x="24" y="192">recipients</text>
+        <path class="flow" d="M150 88 L198 98" marker-end="url(#a)"/>
+        <path class="flow" d="M150 178 L198 130" marker-end="url(#a)"/>
+        <rect class="core" x="200" y="60" width="180" height="90" rx="5"/><text class="t" x="216" y="88">Report API</text><text class="s" x="216" y="108">background jobs</text><text class="s" x="216" y="126">multi-sheet Excel</text>
+        <rect class="box" x="430" y="20" width="160" height="56" rx="5"/><text class="t" x="444" y="44">Report history</text><text class="s" x="444" y="62">status · SQL Server</text>
+        <rect class="box" x="430" y="130" width="160" height="56" rx="5"/><text class="t" x="444" y="154">Report files</text><text class="s" x="444" y="172">Excel · PDF</text>
+        <path class="flow" d="M380 88 L428 52" marker-end="url(#a)"/>
+        <path class="flow" d="M380 124 L428 156" marker-end="url(#a)"/>
+        <path class="evt" d="M430 34 C300 10 150 20 80 58" marker-end="url(#e)"/>
+        <text class="lbl" x="250" y="46">poll status</text>
+        <rect class="box" x="630" y="130" width="120" height="56" rx="5"/><text class="t" x="642" y="154">My Reports</text><text class="s" x="642" y="172">download</text>
+        <path class="flow" d="M590 158 L628 158" marker-end="url(#a)"/>
+        <rect class="box" x="630" y="20" width="120" height="56" rx="5"/><text class="t" x="642" y="44">Reminder</text><text class="s" x="642" y="62">if unread</text>
+        <path class="flow" d="M590 48 L628 48" marker-end="url(#a)"/>
+      </svg>
+    </div>
+    <div class="tags"><span>ASP.NET Web API</span><span>SQL Server</span><span>EPPlus</span><span>jQuery</span><span>WebForms</span></div>
+  </article>
+
+  <!-- D Accounting integration -->
+  <article class="case" id="accounting">
+    <div class="case-head">
+      <span class="label">Integration</span>
+      <h3>Syncing residents from an accounting platform</h3>
+    </div>
+    <div class="case-grid">
+      <div><span class="label">Problem</span><p>Communities managed in an external accounting platform needed their units and residents in the community platform without staff typing them in twice.</p></div>
+      <div><span class="label">What I built</span><p>A Service Bus listener that turns move-in, unit and user events into REST API calls, Azure Data Factory pipelines that load staging tables and run user sync and reports, and tools to merge and unmerge synced users with existing accounts.</p></div>
+      <div><span class="label">Key decisions</span><p>Completed each message only after the API accepted it, and treated a 404 on delete as already done. Blocked duplicate users with the same external id, logged every message payload, and recorded each pipeline run to stop overlapping runs.</p></div>
+    </div>
+    <div class="diagram" role="img" aria-label="The accounting platform publishes events to Service Bus, a listener calls the REST API, which writes SQL Server; in parallel, Data Factory pipelines load staging tables and run user sync and reports into SQL Server.">
+      <svg viewBox="0 0 760 200">
+        <rect class="box" x="10" y="30" width="150" height="140" rx="5"/><text class="t" x="24" y="90">Accounting</text><text class="t" x="24" y="108">platform</text><text class="s" x="24" y="128">external</text>
+        <path class="evt" d="M160 62 L198 62" marker-end="url(#e)"/>
+        <rect class="bus" x="200" y="34" width="120" height="56" rx="5"/><text class="t" x="214" y="58">Service Bus</text><text class="s" x="214" y="76">move-ins · units</text>
+        <path class="evt" d="M320 62 L348 62" marker-end="url(#e)"/>
+        <rect class="core" x="350" y="34" width="130" height="56" rx="5"/><text class="t" x="364" y="58">Listener</text><text class="s" x="364" y="76">.NET 8 · Serilog</text>
+        <path class="flow" d="M480 62 L508 62" marker-end="url(#a)"/>
+        <rect class="box" x="510" y="34" width="110" height="56" rx="5"/><text class="t" x="524" y="58">REST API</text><text class="s" x="524" y="76">homes · users</text>
+        <path class="flow" d="M620 62 L658 90" marker-end="url(#a)"/>
+        <rect class="box" x="660" y="70" width="90" height="70" rx="5"/><text class="t" x="672" y="98">SQL</text><text class="t" x="672" y="114">Server</text>
+        <path class="flow" d="M160 138 L198 138" marker-end="url(#a)"/>
+        <rect class="core" x="200" y="112" width="420" height="56" rx="5"/><text class="t" x="214" y="136">Data Factory pipelines</text><text class="s" x="214" y="154">staging tables → user sync → reports · run log</text>
+        <path class="flow" d="M620 140 L658 124" marker-end="url(#a)"/>
+      </svg>
+    </div>
+    <div class="tags"><span>Azure Service Bus</span><span>Azure Data Factory</span><span>.NET 8</span><span>ASP.NET Web API</span><span>SQL Server</span><span>Serilog</span></div>
+  </article>
 </section>
 
 <section class="sec" id="more">
@@ -291,7 +470,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direc
     <article><span class="label">Integration</span><h3>Cross-platform sync</h3><p>Azure Data Factory and Functions pipelines between accounting and property-management systems, including bidirectional sync and per-environment migrations. Added Serilog and Grafana observability to every sync function and built three production reports.</p></article>
     <article><span class="label">Messaging</span><h3>SMS delivery service</h3><p>Service Bus-triggered Azure Function integrated with Twilio, with retries and delivery tracking, plus an in-product usage dashboard with acceptance and rejection rates per provider and per community.</p></article>
     <article><span class="label">Full stack</span><h3>Community web platform</h3><p>Owned the community web app end to end through general availability: ASP.NET MVC and Web API controllers, T-SQL stored procedures, React components and Playwright end-to-end tests.</p></article>
-    <article><span class="label">Devices</span><h3>Access control & plate recognition</h3><p>Gate kiosks, an access API, barcode scanning, license-plate recognition and resident check-in across a desktop app, a Windows service and sync jobs, sharing one NuGet business-logic package.</p></article>
+    <article><span class="label">Devices</span><h3>Access control & plate recognition</h3><p>Gate kiosks, an access API, barcode scanning, license-plate recognition and resident check-in across a desktop app, a Windows service and sync jobs, sharing one NuGet business-logic package. Raised controller card capacity to 100,000, bounded worker threads, and added automatic restarts for unresponsive controllers.</p></article>
     <article><span class="label">Modernization</span><h3>Payroll integration</h3><p>Moved a payroll system from batch processing to event-driven sync with a new external platform over REST APIs. Also built a TCPA-compliance checker against the FCC reassigned-numbers database.</p></article>
     <article><span class="label">BI · Web</span><h3>Utility service-quality KPIs</h3><p>Replaced manual Excel processes at an electricity distributor serving over a million customers with ASP.NET web apps and a BI solution, cutting human errors by 80% and updating the annual operating plan daily.</p></article>
   </div>
@@ -303,7 +482,7 @@ footer{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direc
     <h2>Experience</h2>
   </div>
   <ul class="timeline">
-    <li><span class="when">2022 – 2026</span><h3>Senior Software Developer · CH2 Solutions</h3><p>Nearshore consultancy. Full feature ownership across .NET 8/10, Azure Functions, React and Angular. Azure DevOps pipelines building Docker images and deploying to AKS with Helm; Terraform modules for Function Apps, Key Vault and Application Insights.</p></li>
+    <li><span class="when">2022 – 2026</span><h3>Senior Software Developer · CH2 Solutions</h3><p>Nearshore consultancy. Full feature ownership across .NET 8/10, Azure Functions, React and Angular. Azure DevOps pipelines building Docker images and deploying to AKS with Helm; Terraform modules for Function Apps, Key Vault and Application Insights. For one property-technology client: 1,600+ commits across 30+ repositories and about 450 work items, and the top contributor to its main web app.</p></li>
     <li><span class="when">2021 – 2022</span><h3>Software Developer III · Enhanced Resource Center</h3><p>BPO company. Agent coaching web app, TCPA compliance tooling and payroll modernization.</p></li>
     <li><span class="when">2009 – 2021</span><h3>Data Acquisition System Administrator · Edenorte Dominicana</h3><p>Electricity distributor. Web and BI solutions for commercial service-quality indicators.</p></li>
   </ul>

@@ -2,11 +2,12 @@
 
 Personal portfolio of a senior .NET backend engineer: case studies and architecture diagrams for system-integration and event-driven projects on Azure.
 
-**Live site:** https://YOUR-USERNAME.github.io
+**Live site:** https://dustman001.github.io
 
 ## Contents
 
-- Case studies: Universal Data Model, Change Data Capture event system, multi-channel notification service, In-App Instant Access
+- Case studies: Universal Data Model, Change Data Capture event system, multi-channel notification service, In-App Instant Access, in-app notifications across three products
+- Community platform architecture: shared business library, offline gatehouse sync, asynchronous reporting, accounting integration
 - More projects, experience timeline and skills
 
 ## Tech
