@@ -196,10 +196,11 @@ footer{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direc
     <div class="case-grid">
       <div><span class="label">Problem</span><p>Downstream services needed to react when data changed in each client's database, without touching the legacy applications that wrote to it.</p></div>
       <div><span class="label">What I built</span><p>A timer-triggered Azure Functions listener (dotnet-isolated) that reads SQL Server CDC tables in every client database and publishes "entity changed" events to Azure Event Hub.</p></div>
-      <div><span class="label">Key decisions</span><p>Tracked the log sequence number (LSN) per database so no change is processed twice. Made batch size configurable. Added health and liveness probes so Kubernetes can restart a stuck listener. On the consumer side: retries, dead-lettering, idempotent processing, a guard against re-consuming its own writes, and a per-tenant re-sync pass.</p></div>
+      <div><span class="label">Key decisions</span><p>Tracked the log sequence number (LSN) per database so no change is processed twice. Made batch size configurable. Added health and liveness probes so Kubernetes can restart a stuck listener. A guard stops the consumer from re-consuming its own writes, and a per-tenant re-sync pass repairs drift.</p></div>
     </div>
-    <div class="diagram" role="img" aria-label="Client databases with CDC tables are polled by a timer-triggered listener that checkpoints the LSN and publishes events to Event Hub for downstream consumers.">
-      <svg viewBox="0 0 760 200">
+    <div><span class="label">Consumer reliability</span><p>Made delivery loss-proof. Fast exponential-backoff retries sit on the trigger, but the real retry ceiling is stored in SQL, because an in-memory count resets every time an instance restarts. Events that keep failing are dead-lettered with enough context to replay them. Every write is deduplicated by LSN, and a transactional outbox commits the processed record and its outgoing change event together, so a failed publish can't lose an update. All per-event state is scoped by tenant, because two client databases can emit the same LSN. Driving real QA data end to end then exposed six defects that had all looked like success (placeholder dates, partial change detection, an ordering race), and I fixed them.</p></div>
+    <div class="diagram" role="img" aria-label="Client databases with CDC tables are polled by a timer-triggered listener that checkpoints the LSN and publishes events to Event Hub. A consumer with retries, LSN dedup and a transactional outbox writes to the data model and dead-letters events that keep failing; notifications also consume the events.">
+      <svg viewBox="0 0 960 200">
         <rect class="box" x="10" y="30" width="150" height="44" rx="5"/><text class="t" x="24" y="57">Client DB A</text>
         <rect class="box" x="10" y="84" width="150" height="44" rx="5"/><text class="t" x="24" y="111">Client DB B</text>
         <rect class="box" x="10" y="138" width="150" height="44" rx="5"/><text class="t" x="24" y="165">Client DB n</text>
@@ -210,15 +211,20 @@ footer{border-top:1px solid var(--line);padding-top:20px;display:flex;flex-direc
         <text class="s" x="176" y="140">poll</text>
         <rect class="core" x="242" y="56" width="200" height="100" rx="5"/><text class="t" x="258" y="84">CDC listener</text><text class="s" x="258" y="104">timer trigger · isolated</text><text class="s" x="258" y="122">LSN checkpoint</text><text class="s" x="258" y="140">batched reads · probes</text>
         <path class="evt" d="M442 106 L500 106" marker-end="url(#e)"/>
-        <text class="lbl" x="446" y="96">entity changed</text>
+        <text class="lbl" x="448" y="66">entity changed</text>
         <rect class="bus" x="502" y="76" width="110" height="60" rx="5"/><text class="t" x="516" y="102">Event Hub</text><text class="s" x="516" y="120">Azure</text>
-        <path class="evt" d="M612 96 L660 70" marker-end="url(#e)"/>
-        <path class="evt" d="M612 116 L660 142" marker-end="url(#e)"/>
-        <rect class="box" x="662" y="45" width="90" height="44" rx="5"/><text class="s" x="674" y="71">data model</text>
-        <rect class="box" x="662" y="122" width="90" height="44" rx="5"/><text class="s" x="674" y="148">notifications</text>
+        <path class="evt" d="M612 96 C632 96 632 58 648 58" marker-end="url(#e)"/>
+        <path class="evt" d="M612 116 C632 116 632 162 648 162" marker-end="url(#e)"/>
+        <rect class="core" x="650" y="18" width="170" height="80" rx="5"/><text class="t" x="664" y="42">Consumer</text><text class="s" x="664" y="62">retries · LSN dedup</text><text class="s" x="664" y="80">outbox · per tenant</text>
+        <path class="flow" d="M820 44 L846 44" marker-end="url(#a)"/>
+        <rect class="box" x="848" y="22" width="104" height="44" rx="5"/><text class="s" x="860" y="48">data model</text>
+        <path class="flow" d="M820 80 C836 80 836 116 846 116" marker-end="url(#a)"/>
+        <rect class="box" x="848" y="96" width="104" height="40" rx="5"/><text class="s" x="860" y="120">dead-letter</text>
+        <text class="s" x="740" y="120">after N tries</text>
+        <rect class="box" x="650" y="140" width="170" height="44" rx="5"/><text class="s" x="664" y="166">notifications</text>
       </svg>
     </div>
-    <div class="tags"><span>Azure Functions</span><span>Azure Event Hub</span><span>SQL Server CDC</span><span>AKS</span><span>Docker</span><span>Helm</span></div>
+    <div class="tags"><span>Azure Functions</span><span>Azure Event Hub</span><span>SQL Server CDC</span><span>Transactional outbox</span><span>Idempotency</span><span>AKS</span><span>Docker</span><span>Helm</span></div>
   </article>
 
   <!-- 3 Notifications -->
